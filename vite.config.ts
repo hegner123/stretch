@@ -1,7 +1,26 @@
-import { defineConfig } from 'vite'
-import { svelte } from '@sveltejs/vite-plugin-svelte'
+import { sveltekit } from '@sveltejs/kit/vite';
+import { defineConfig } from 'vitest/config';
+import fs from 'fs'
+import path from 'path'
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [svelte()],
-})
+    plugins: [sveltekit()],
+    server: {
+        https: {
+            key: fs.readFileSync(path.resolve(__dirname, './cert/localhost.key')),
+            cert: fs.readFileSync(path.resolve(__dirname, './cert/localhost.crt'))
+        },
+        host: '0.0.0.0',
+        port: 3000,
+        proxy: {
+            '/api': {
+                target: 'http://localhost:5000',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api/, ''),
+                headers: {
+                    // Ensure no invalid headers are set here
+                }
+            }
+        }
+    }
+});
