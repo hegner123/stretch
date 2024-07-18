@@ -9,6 +9,8 @@ import { getUserByEmail } from './db/auth';
 import { readFileSync } from "fs";
 
 const demoEmail = "user@example.com"
+const successStyle = "\x1b[32m"
+const errorStyle = "\x1b[31m"
 
 const app = express();
 const port = 4000;
@@ -24,12 +26,12 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }))
+
 app.use(cookieParser())
 app.use("/api", apiRouter)
 
 app.post('/', async (req: any, res: any) => {
     const token = req.cookies;
-    console.log(req)
     if (token) {
         res.status(200).json({ message: 'Authenticated', token: token });
     } else {
@@ -40,16 +42,15 @@ app.post('/', async (req: any, res: any) => {
 async function launchServer() {
     try {
         const connection = await getDB();
-        if (connection === null) throw Error(`Failed to connect to database. ${process.env.DB_DATABASE}`)
+        if (connection === null) throw Error(`${errorStyle}Failed to connect to database. ${process.env.DB_DATABASE}`)
         const rows = await getUserByEmail(demoEmail)
         if (rows) {
-            console.log("Server connected to database")
+            console.log(`${successStyle}Server connected to database`)
         }
     } catch (err) {
-        console.error(err)
+        console.error(`${errorStyle}${err}`)
     }
-    console.log(`Server is running on https://localhost:${port}`);
-
+    console.log(`${successStyle}Server is running on http://localhost:${port}`);
 }
 
 app.listen(port, launchServer)

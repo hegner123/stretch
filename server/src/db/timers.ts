@@ -1,10 +1,10 @@
-import getDB from "../connect";
+import getDB from "./connect";
 import { Timer } from "../types";
 import { createQueryResponse } from "./createQuery";
 
 async function getTimer(id: number): Promise<any | null> {
     let connection = await getDB();
-    const query = 'SELECT * FROM Timers WHERE id = ?';
+    const query = 'SELECT * FROM timers WHERE id = ?';
     try {
         await connection.beginTransaction()
         const [rows] = await connection.execute(query, [id]);
@@ -24,9 +24,9 @@ async function getTimer(id: number): Promise<any | null> {
 async function insertTimer(timer: Timer, timerOrder: string[]): Promise<any | null> {
     
     let connection = await getDB();
-    const query = 'INSERT INTO Timers (userId,setId,timeMs,type) VALUES (?,?,?,?) ';
-    const select = 'SELECT timerOrder FROM Timer_sets WHERE id = ?'
-    const parentQuery = "UPDATE Timer_sets SET timerOrder = ? WHERE id = ?"
+    const query = 'INSERT INTO timers (userId,setId,timeMs,type) VALUES (?,?,?,?) ';
+    const select = 'SELECT timerOrder FROM timer_sets WHERE id = ?'
+    const parentQuery = "UPDATE timer_sets SET timerOrder = ? WHERE id = ?"
     try {
         await connection.beginTransaction()
         const [rows] = await connection?.execute(query, [
@@ -52,7 +52,7 @@ async function insertTimer(timer: Timer, timerOrder: string[]): Promise<any | nu
 
 async function updateTimer(id: number, updatedTimer: Partial<Timer>): Promise<any | null> {
     let connection = await getDB();
-    const query = 'UPDATE Timers SET timeMs = ?, type = ? WHERE id = ?';
+    const query = 'UPDATE timers SET timeMs = ?, type = ? WHERE id = ?';
     try {
         await connection.beginTransaction()
         const [rows] = await connection?.execute(query, [
@@ -75,7 +75,7 @@ async function updateTimer(id: number, updatedTimer: Partial<Timer>): Promise<an
 
 async function deleteTimer(id: number) {
     let connection = await getDB();
-    const query = 'DELETE FROM Timers WHERE id = ?';
+    const query = 'DELETE FROM timers WHERE id = ?';
     try {
         await connection.beginTransaction();
         const [rows] = await connection.execute(query, [id]);

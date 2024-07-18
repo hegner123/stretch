@@ -4,7 +4,7 @@ import { createErrorResponse, createQueryResponse } from "./createQuery";
 
 async function getUserByEmail(email: string): Promise<any | null> {
     let connection = await getDB();
-    const query = 'SELECT * FROM Users WHERE email = ?';
+    const query = 'SELECT * FROM users WHERE email = ?';
     try {
         await connection.beginTransaction()
         const [rows] = await connection?.execute(query, [email]);
@@ -23,7 +23,7 @@ async function getUserByEmail(email: string): Promise<any | null> {
 
 async function addUser(email: string, password: string): Promise<any> {
     let connection = await getDB();
-    const query = "INSERT INTO Users (email, password, salt) VALUES (?,?,?)"
+    const query = "INSERT INTO users (email, password, salt) VALUES (?,?,?)"
     try {
         await connection.beginTransaction()
         const [rows] = await connection?.execute(query, [email, password, process.env.SERVER_SECRET])
@@ -42,7 +42,7 @@ async function addUser(email: string, password: string): Promise<any> {
 
 async function addToken(token: string, email: string) {
     let connection = await getDB();
-    const query = "UPDATE Users SET sessionToken = ? WHERE email = ?";
+    const query = "UPDATE users SET sessionToken = ? WHERE email = ?";
     try {
         await connection.beginTransaction()
         const [rows] = await connection?.execute(query, [token, email])
@@ -61,7 +61,7 @@ async function addToken(token: string, email: string) {
 
 async function clearTokens(userId: string) {
     let connection = await getDB();
-    const query = "UPDATE Users SET sessionToken = NULL, refreshToken = NULL WHERE id = ?";
+    const query = "UPDATE users SET sessionToken = NULL, refreshToken = NULL WHERE id = ?";
     try {
         await connection.beginTransaction()
         const [rows] = await connection?.execute(query, [userId])
@@ -79,9 +79,9 @@ async function clearTokens(userId: string) {
 
 async function deleteUser(userId:number) {
     let connection = await getDB();
-    const query1 = "DELETE FROM Timers WHERE userId = ?";
-    const query2 = "DELETE FROM Timer_sets WHERE userId = ?";
-    const query3 = "DELETE FROM Users WHERE id = ?";
+    const query1 = "DELETE FROM timers WHERE userId = ?";
+    const query2 = "DELETE FROM timer_sets WHERE userId = ?";
+    const query3 = "DELETE FROM users WHERE id = ?";
     try {
         await connection.beginTransaction()
         await connection?.execute(query1, [userId])

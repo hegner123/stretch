@@ -1,10 +1,10 @@
-import getDB from "../connect";
+import getDB from "./connect";
 import { TimerSets } from "../types";
 import { createQueryResponse } from "./createQuery";
 
 async function getTimerSets(userId: string) {
     let connection = await getDB();
-    const query = 'SELECT * FROM Timer_sets WHERE userId = ?';
+    const query = 'SELECT * FROM timer_sets WHERE userId = ?';
     try {
         await connection.beginTransaction()
         const [rows] = await connection.execute(query, [userId]);
@@ -22,7 +22,7 @@ async function getTimerSets(userId: string) {
 
 export async function getTimerOrderFromSet(setId: number) {
     let connection = await getDB();
-    const query = "SELECT timerOrder FROM Timer_sets WHERE id = ?"
+    const query = "SELECT timerOrder FROM timer_sets WHERE id = ?"
     try {
         await connection.beginTransaction()
         const [rows] = await connection.execute(query, [setId])
@@ -45,9 +45,9 @@ export async function getTimersAndOrderFromSet(setId: number) {
       t.type,
       ts.timerOrder
     FROM
-      Timers t
+      timers t
     JOIN
-      Timer_sets ts ON t.setId = ts.id;`
+      timer_sets ts ON t.setId = ts.id;`
     try {
         await connection.beginTransaction()
         const [rows] = await connection.execute(query, [setId])
@@ -61,7 +61,7 @@ export async function getTimersAndOrderFromSet(setId: number) {
 
 async function getTimerSetsByUser(userId: string) {
     let connection = await getDB();
-    const query = 'SELECT * FROM Timer_sets WHERE userId = ?';
+    const query = 'SELECT * FROM timer_sets WHERE userId = ?';
     try {
         await connection.beginTransaction();
         const [rows] = await connection.execute(query, [parseInt(userId)]);
@@ -79,7 +79,7 @@ async function getTimerSetsByUser(userId: string) {
 
 async function getTimersFromSet(setId: number) {
     let connection = await getDB();
-    const query = "SELECT * FROM Timers WHERE setId = ?;"
+    const query = "SELECT * FROM timers WHERE setId = ?;"
     try {
         await connection.beginTransaction()
         const [rows] = await connection?.execute(query, [setId]);
@@ -99,7 +99,7 @@ async function getTimersFromSet(setId: number) {
 
 async function insertTimerSet(userId: number, timerSet: TimerSets) {
     let connection = await getDB();
-    const query = 'INSERT INTO Timer_sets (userId, name, timerOrder) VALUES (?,?,?)';
+    const query = 'INSERT INTO timer_sets (userId, name, timerOrder) VALUES (?,?,?)';
     try {
         await connection.beginTransaction()
         const [rows] = await connection?.execute(query, [
@@ -121,7 +121,7 @@ async function insertTimerSet(userId: number, timerSet: TimerSets) {
 
 async function updateTimerSet(id: number, timerSet: TimerSets) {
     let connection = await getDB();
-    const query = 'UPDATE Timer_sets SET name = ?, timerOrder = ? WHERE id = ?';
+    const query = 'UPDATE timer_sets SET name = ?, timerOrder = ? WHERE id = ?';
     try {
         await connection.beginTransaction()
         const [rows] = await connection?.execute(query, [
@@ -144,8 +144,8 @@ async function updateTimerSet(id: number, timerSet: TimerSets) {
 
 async function deleteTimerSet(id: number) {
     let connection = await getDB();
-    const childQuery = 'DELETE FROM Timers WHERE setId = ?'
-    const query = 'DELETE FROM Timer_sets WHERE id = ?';
+    const childQuery = 'DELETE FROM timers WHERE setId = ?'
+    const query = 'DELETE FROM timer_sets WHERE id = ?';
     try {
         await connection.beginTransaction();
         await connection.execute(childQuery, [id])

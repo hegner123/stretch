@@ -28,7 +28,8 @@
 	.card {
 		background: #333;
 		padding: 1rem 0.5rem;
-		max-width: 400px;
+		max-width: 90vw;
+        width:max-content;
 		border-radius: 15px;
 		display: grid;
 	}

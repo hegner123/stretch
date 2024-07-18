@@ -1,0 +1,14 @@
+{
+	"/": [],
+	"/account": [],
+	"/dashboard": [
+		"src/routes/dashboard/+page.ts"
+	],
+	"/demo": [],
+	"/login": [],
+	"/register": [],
+	"/sets/[slug]": [],
+	"/timers/[slug]": [
+		"src/routes/timers/[slug]/+page.ts"
+	]
+}
