@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+    import CloseIcon from '$lib/icons/closeIcon.svelte';
 	const dispatch = createEventDispatcher();
 	export let setId: number;
 	export let name = '';
@@ -21,7 +22,9 @@
 	<button class="link" on:click={handleDispatchMakeActive}>
 		<slot></slot>
 	</button>
-	<button class="btn-delete" on:click={handleDelete}>Delete</button>
+	<button class="btn-delete" on:click={handleDelete}>
+        <CloseIcon size={36} backgroundColor={"#f00"} iconColor={"#000"} weight={4}/>
+    </button>
 </article>
 
 <style>
@@ -32,6 +35,7 @@
         width:max-content;
 		border-radius: 15px;
 		display: grid;
+        position:relative;
 	}
 	button.link {
 		color: #fff;
@@ -40,17 +44,26 @@
         box-shadow:none;
 		text-decoration: none;
         cursor: pointer;
+        margin-top:1rem;
 	}
 
+    button.link:hover{
+        text-decoration: underline;
+
+    }
+
 	.btn-delete {
-		background: #ff5555;
-		color: black;
+        position: absolute;
+        top:-7px;
+        right:-7px;
+        background:transparent;
 		border: none;
+        width:36px;
+        height:36px;
+        margin:0;
+        padding:0;
 		box-shadow: none;
-		border-radius: 15px;
-		padding: 0.5rem 0.25rem;
-		font-size: 1rem;
+		border-radius: 50%;
 		cursor: pointer;
-		margin-top: 1rem;
 	}
 </style>

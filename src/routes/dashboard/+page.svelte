@@ -8,7 +8,6 @@
     import TimerSetup from "$lib/components/TimerSetup.svelte";
     import { onMount, setContext } from "svelte";
     import { writable } from "svelte/store";
-    import Page from "../+page.svelte";
     const data = writable<any>("");
     const timers = writable<any>("");
     const ready = writable<boolean>(false);
@@ -16,10 +15,10 @@
     const userId = writable<number | null>(null);
     const displayActive = writable<string>("");
     const isLoading = writable<boolean>(true);
-    const hasMounted = writable<boolean>(false);
     const fetchError = writable<unknown>("");
 
     setContext("setId", active);
+    setContext("timerOrder", {timerOrder:["1","2"]} );
 
     async function fetchSets(id: number | null) {
         if (userId === null) return;
@@ -48,8 +47,31 @@
         }
     }
 
+    async function deleteTimer(timerId:number | null) {
+        if (timerId === null) return;
+        try {
+            const url = `http://localhost:4000/api/sets/timers/${timerId}`;
+            const options = {
+                method:"DELETE"
+            }
+            const response = await fetch(url, options);
+            return await response.json();
+        } catch (err) {
+            console.error(err);
+            fetchError.set(err);
+        }
+    }
+
+    async function handleDeleteTimer (e: any) {
+        if ( e === null) return;
+        const delRequest = await deleteTimer(e.detail.timerId)
+        if ( delRequest !== null ) {
+            timers.set(await fetchTimers($userId))
+        }
+    }
+
     async function handleInsert() {
-        data.set(await fetchSets($userId));
+        timers.set(await fetchSets($userId));
     }
 
     active.subscribe(async (value) => {
@@ -59,8 +81,12 @@
             timers.set(response.body);
         }
     });
+    data.subscribe((value)=>{
+        console.log(value)
+    })
 
-    timers.subscribe((value) => {
+    timers.subscribe(async (value) => {
+        if (value === undefined) return;
         if (value.length > 0) ready.set(true);
     });
     onMount(async () => {
@@ -77,7 +103,7 @@
             fetchedSets.message.body[0].name,
         );
         userId.set(user.id);
-        data.set(fetchedSets);
+        data.set(fetchedSets.message.body);
         timers.set(fetchedTimers.body);
     });
     function handleMakeActive(e: any) {
@@ -111,6 +137,7 @@
                                 id={timer.id}
                                 timeMs={timer.timeMs}
                                 type={timer.type}
+                                on:deleteTimer={handleDeleteTimer}
                             />
                         {/each}
                     {:else}
@@ -172,6 +199,7 @@
 
     .set-header {
         display: flex;
+        align-items:center;
     }
 
     .timer-set-list {
@@ -191,6 +219,7 @@
 
     .setup-header {
         display: flex;
+        align-items:center;
     }
 
     .setup-group {
@@ -199,7 +228,7 @@
     }
 
     .stretch {
-        background: #449944;
+        background: var(--success);
         color: white;
         border-radius: 25px;
         font-size: 2rem;
@@ -220,6 +249,7 @@
         }
         .setup-container {
             grid-column: 2/6;
+            grid-row: 1;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-auto-rows: min-content;
@@ -232,21 +262,27 @@
         .set-container {
             display: grid;
             grid-column: -4/-2;
+            grid-row: 1;
+            grid-auto-rows: max-content;
         }
 
         .timer-set-list {
             display: grid;
+            grid-template-columns: 1fr;
             gap: 1rem;
         }
+
         .setup-group {
             display: grid;
             grid-auto-rows: max-content;
             gap: 1rem;
             grid-column: 1/-1;
         }
+
         .stretch {
-            background: #333;
+            background: var(--success);
             color: white;
+            padding: 1rem;
             border-radius: 25px;
             font-size: 2rem;
             cursor: pointer;

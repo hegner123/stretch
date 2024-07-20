@@ -1,9 +1,12 @@
 <script lang="ts">
-    import type { ChangeEventHandler } from "svelte/elements";
+    import { createEventDispatcher } from "svelte";
     import { writable } from "svelte/store";
     import { getContext, onMount } from "svelte";
+    import CloseIcon from "$lib/icons/closeIcon.svelte";
+
+    const dispatch = createEventDispatcher();
     const setId = getContext("setId");
-    export let id = null;
+    export let id: number | null = null;
     export let timeMs = null;
     export let type = null;
     const timerLength = writable(0);
@@ -14,6 +17,10 @@
         const value = event.currentTarget.value;
         timerType.set(value);
     }
+
+    function deleteTimer() {
+        dispatch("deleteTimer", { detail: id });
+    }
     onMount(() => {
         if (timeMs !== null) {
             timerLength.set(timeMs / 1000);
@@ -23,6 +30,9 @@
 
 {#if setId !== null}
     <form data-id={id} data-timeMs={timeMs} data-type={type}>
+        <button class="delete-btn" on:click={deleteTimer}>
+            <CloseIcon size={36} backgroundColor={"#f00"} iconColor={"#000"} weight={4}/>
+        </button>
         <div class="length-group">
             <label for="timer-length">Length (s)</label>
             <div class="length-input-group">
@@ -53,6 +63,7 @@
 
 <style>
     form {
+        position: relative;
         grid-column: 2/-2;
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -88,5 +99,18 @@
     .group-title {
         grid-column: 1/-1;
         color: black;
+    }
+
+    .delete-btn {
+        position: absolute;
+        width:36px;
+        height:36px;
+        top: -7px;
+        right: -7px;
+        border: none;
+        padding:0;
+        margin:0;
+        border-radius:50%;
+        cursor: pointer;
     }
 </style>

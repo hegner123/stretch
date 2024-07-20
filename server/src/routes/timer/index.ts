@@ -20,7 +20,9 @@ async function getTimerByIdRoute(req: Request, res: Response) {
 }
 
 async function createTimerRoute(req: Request, res: Response) {
+    console.log(req.params.setId)
     try {
+        console.log(req.body)
         const setId = req.params.setId
         const { userId, timeMs, type } = req.body.timer
         const timer: Timer = { userId: userId, setId: parseInt(setId), timeMs: timeMs, type: type }

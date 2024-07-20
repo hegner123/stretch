@@ -15,6 +15,7 @@
     --page-margin:1rem;
     --nav-height: 5rem;
     --radius: 15px;
+    --success:#449944;
 }
 @media (min-width:1024px){
 

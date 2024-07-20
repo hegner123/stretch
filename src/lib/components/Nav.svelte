@@ -172,13 +172,15 @@
 	.links {
 		display: grid;
 		padding: 1rem;
-		grid-template-columns: repeat(3, 1fr);
+		grid-template-columns: repeat(3, max-content);
+        place-items: center;
 		gap: 1rem;
 	}
 
 	.menu-item {
 		padding: 0;
 		list-style: none;
+        text-align: center;
 	}
 	.menu-item a,
 	.btn-as-link {

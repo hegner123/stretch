@@ -21,6 +21,9 @@ CREATE TABLE IF NOT EXISTS timer_sets (
   id INT PRIMARY KEY AUTO_INCREMENT,
   userId INT NOT NULL,
   name VARCHAR(255),
+  loops BOOLEAN DEFAULT FALSE,
+  globalRest BOOLEAN DEFAULT TRUE,
+  globalTime INT DEFAULT 0,
   timerOrder JSON DEFAULT '[]' NOT NULL,
   FOREIGN KEY (userId) REFERENCES users(id)
 );
