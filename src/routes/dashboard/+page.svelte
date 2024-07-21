@@ -17,7 +17,7 @@
     const isLoading = writable<boolean>(true);
     const fetchError = writable<unknown>("");
 
-    setContext("setId", active);
+    setContext("setId", $active);
     setContext("timerOrder", {timerOrder:["1","2"]} );
 
     async function fetchSets(id: number | null) {
@@ -81,9 +81,9 @@
             timers.set(response.body);
         }
     });
-    data.subscribe((value)=>{
-        console.log(value)
-    })
+    // data.subscribe((value)=>{
+    //    console.log(value)
+    //})
 
     timers.subscribe(async (value) => {
         if (value === undefined) return;
@@ -103,8 +103,8 @@
             fetchedSets.message.body[0].name,
         );
         userId.set(user.id);
-        data.set(fetchedSets.message.body);
-        timers.set(fetchedTimers.body);
+        data.set(fetchedSets?.message?.body);
+        timers.set(fetchedTimers?.body);
     });
     function handleMakeActive(e: any) {
         console.log(e);
@@ -155,8 +155,8 @@
                     <AddTimerSet on:dbinsert={handleInsert} />
                 </div>
                 <div class="timer-set-list">
-                    {#if $data?.message?.body?.length > 1}
-                        {#each $data?.message?.body as item}
+                    {#if $data?.length > 1}
+                        {#each $data as item}
                             <TimerSet
                                 on:deleteSuccess={handleInsert}
                                 setId={item.id}
@@ -168,8 +168,8 @@
                         {/each}
                     {:else}
                         <TimerSet
-                            setId={$data.message.body[0].id}
-                            name={$data.message.body[0].name}
+                            setId={$data[0].id}
+                            name={$data[0].name}
                             on:deleteSuccess={handleInsert}
                             on:handleMakeActive={handleMakeActive}
                         >

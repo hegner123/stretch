@@ -84,7 +84,6 @@ async function getTimersFromSet(setId: number) {
         await connection.beginTransaction()
         const [rows] = await connection?.execute(query, [setId]);
         await connection.commit()
-        console.log(rows)
         return createQueryResponse(rows, query)
     } catch (error) {
         await connection.rollback()

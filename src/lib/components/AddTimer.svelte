@@ -7,13 +7,12 @@
     const insertRequest = writable<string>("");
     const fetchError = writable<unknown>("");
     const setId: Writable<Stores> = getContext("setId");
-    const timerOrder: Writable<Stores> = getContext("timerOrder");
+    const timerOrder: string[] = getContext("timerOrder");
 
     async function getUserId() {
         const storageItem = sessionStorage.getItem("user");
         if (storageItem === null) return;
         const user = JSON.parse(storageItem);
-        console.log(user);
         return user.id;
     }
 
@@ -25,7 +24,7 @@
                 timeMs: 0,
                 type: "stretch",
             },
-            timerOrder: $timerOrder,
+            timerOrder: timerOrder,
         };
         async function insertTimer(id: unknown) {
             if (id === null) return;

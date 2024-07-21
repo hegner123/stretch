@@ -28,7 +28,7 @@
     });
 </script>
 
-{#if setId !== null}
+{#if id  !== null}
     <form data-id={id} data-timeMs={timeMs} data-type={type}>
         <button class="delete-btn" on:click={deleteTimer}>
             <CloseIcon size={36} backgroundColor={"#f00"} iconColor={"#000"} weight={4}/>
