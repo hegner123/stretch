@@ -29,7 +29,7 @@
         async function insertTimer(id: unknown) {
             if (id === null) return;
             try {
-                const url = `http://localhost:4000/api/timer/${id}`;
+                const url = `http://localhost:4000/api/timers/${id}`;
                 const response = await fetch(url, {
                     method: "POST",
                     headers: {

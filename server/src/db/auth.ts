@@ -4,7 +4,7 @@ import { createErrorResponse, createQueryResponse } from "./createQuery";
 
 async function getUserByEmail(email: string): Promise<any | null> {
     let connection = await getDB();
-    const query = 'SELECT * FROM users WHERE email = ?';
+    const query = 'SELECT * FROM users WHERE email = ? AND deleted = 0';
     try {
         await connection.beginTransaction()
         const [rows] = await connection?.execute(query, [email]);

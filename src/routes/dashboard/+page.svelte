@@ -6,6 +6,8 @@
     import AddTimerSet from "$lib/components/AddTimerSet.svelte";
     import TimerSet from "$lib/components/TimerSet.svelte";
     import TimerSetup from "$lib/components/TimerSetup.svelte";
+    import TitleEdit from "$lib/components/TitleEdit.svelte";
+    import EditIcon from "$lib/icons/editIcon.svelte";
     import { onMount, setContext } from "svelte";
     import { writable } from "svelte/store";
     const data = writable<any>("");
@@ -18,12 +20,12 @@
     const fetchError = writable<unknown>("");
 
     setContext("setId", $active);
-    setContext("timerOrder", {timerOrder:["1","2"]} );
+    setContext("timerOrder", { timerOrder: ["1", "2"] });
 
     async function fetchSets(id: number | null) {
         if (userId === null) return;
         try {
-            const url = `http://localhost:4000/api/sets/${id}`;
+            const url = `http://localhost:4000/api/timersets/${id}`;
             const response = await fetch(url);
             return await response.json();
         } catch (err) {
@@ -38,7 +40,7 @@
     async function fetchTimers(setId: number | null) {
         if (setId === null) return;
         try {
-            const url = `http://localhost:4000/api/sets/timers/${setId}`;
+            const url = `http://localhost:4000/api/timersets/timers/${setId}`;
             const response = await fetch(url);
             return await response.json();
         } catch (err) {
@@ -47,13 +49,13 @@
         }
     }
 
-    async function deleteTimer(timerId:number | null) {
+    async function deleteTimer(timerId: number | null) {
         if (timerId === null) return;
         try {
-            const url = `http://localhost:4000/api/sets/timers/${timerId}`;
+            const url = `http://localhost:4000/api/timersets/timers/${timerId}`;
             const options = {
-                method:"DELETE"
-            }
+                method: "DELETE",
+            };
             const response = await fetch(url, options);
             return await response.json();
         } catch (err) {
@@ -62,11 +64,11 @@
         }
     }
 
-    async function handleDeleteTimer (e: any) {
-        if ( e === null) return;
-        const delRequest = await deleteTimer(e.detail.timerId)
-        if ( delRequest !== null ) {
-            timers.set(await fetchTimers($userId))
+    async function handleDeleteTimer(e: any) {
+        if (e === null) return;
+        const delRequest = await deleteTimer(e.detail.timerId);
+        if (delRequest !== null) {
+            timers.set(await fetchTimers($userId));
         }
     }
 
@@ -81,9 +83,9 @@
             timers.set(response.body);
         }
     });
-    // data.subscribe((value)=>{
-    //    console.log(value)
-    //})
+    data.subscribe((value) => {
+        console.log(value);
+    });
 
     timers.subscribe(async (value) => {
         if (value === undefined) return;
@@ -94,17 +96,15 @@
         if (storageItem === null) return;
         const user = await JSON.parse(storageItem);
         const fetchedSets = await fetchSets(await user.id);
-        const fetchedTimers = await fetchTimers(
-            fetchedSets?.message.body[0].id,
-        );
-        if (fetchedTimers.body.length > 0) ready.set(true);
-        makeActive(
-            fetchedSets.message.body[0].id,
-            fetchedSets.message.body[0].name,
-        );
+        let fetchedTimers;
+        if (fetchedSets.body) {
+            fetchedTimers = await fetchTimers(fetchedSets?.body[0].id);
+        }
+        if (fetchedTimers?.body?.length > 0) ready.set(true);
+        makeActive(fetchedSets?.body[0]?.id, fetchedSets?.body[0]?.name);
         userId.set(user.id);
-        data.set(fetchedSets?.message?.body);
-        timers.set(fetchedTimers?.body);
+        data.set(fetchedSets?.body);
+        timers.set(fetchedTimers ? fetchedTimers?.body : []);
     });
     function handleMakeActive(e: any) {
         console.log(e);
@@ -123,11 +123,12 @@
     <div class="container">
         <div class="setup-container">
             {#if !$isLoading && $timers !== ""}
-                <div class="setup-header">
-                    <h2 class="setup-title">{$displayActive}</h2>
-                    <AddTimer />
-                </div>
-                {#if $ready}
+                {#if $active !== null}
+                    <div class="setup-header">
+                        <TitleEdit title={$displayActive}/>
+                    </div>
+                {/if}
+                {#if $ready && $timers.length > 0}
                     <a class="stretch" href={`/timers/${$active}`}>Stretch</a>
                 {/if}
                 <div class="setup-group">
@@ -155,7 +156,7 @@
                     <AddTimerSet on:dbinsert={handleInsert} />
                 </div>
                 <div class="timer-set-list">
-                    {#if $data?.length > 1}
+                    {#if $data && $data?.length > 1}
                         {#each $data as item}
                             <TimerSet
                                 on:deleteSuccess={handleInsert}
@@ -166,15 +167,17 @@
                                 Timer Id {item.id}
                             </TimerSet>
                         {/each}
-                    {:else}
+                    {:else if $data?.length === 1}
                         <TimerSet
                             setId={$data[0].id}
                             name={$data[0].name}
                             on:deleteSuccess={handleInsert}
                             on:handleMakeActive={handleMakeActive}
                         >
-                            Timer Id {$data.message.body[0].id}
+                            Timer Id {$data[0].id}
                         </TimerSet>
+                    {:else}
+                        <p>No Sets</p>
                     {/if}
                 </div>
             {:else}
@@ -199,7 +202,7 @@
 
     .set-header {
         display: flex;
-        align-items:center;
+        align-items: center;
     }
 
     .timer-set-list {
@@ -219,7 +222,7 @@
 
     .setup-header {
         display: flex;
-        align-items:center;
+        align-items: center;
     }
 
     .setup-group {
@@ -240,6 +243,7 @@
         justify-content: center;
         text-decoration: none;
     }
+
     @media (min-width: 1024px) {
         .container {
             display: grid;
@@ -248,15 +252,15 @@
             grid-auto-rows: min-content;
         }
         .setup-container {
-            grid-column: 2/6;
+            grid-column: 2/7;
             grid-row: 1;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-auto-rows: min-content;
         }
 
-        .setup-title {
-            grid-column: 1/2;
+        .setup-header {
+            grid-column: 1/-1;
         }
 
         .set-container {

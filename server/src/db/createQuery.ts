@@ -22,7 +22,7 @@ function createQueryResponse(data: any, queryString: string) {
                 response = {
                     body: data,
                     resCount: data.length,
-                     query: queryString,
+                    query: queryString,
                     status: SUCCESS
                 }
                 return response;

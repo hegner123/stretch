@@ -4,14 +4,14 @@ import { Timer } from "../../types";
 
 const timerRoutes:Router = Router()
 
-timerRoutes.get("/:id", getTimerByIdRoute)
+timerRoutes.get("/:timerId", getTimerByIdRoute)
 timerRoutes.post("/:setId", createTimerRoute)
-timerRoutes.put("/:id", updateTimerRoute)
-timerRoutes.delete("/:id", deleteTimerRoute)
+timerRoutes.put("/:timerId", updateTimerRoute)
+timerRoutes.delete("/:timerId", deleteTimerRoute)
 
 async function getTimerByIdRoute(req: Request, res: Response) {
     try {
-        const id = req.params.id
+        const id = req.params.timerId
         const result = await getTimer(parseInt(id))
         res.status(200).json(result)
     } catch (err) {
@@ -35,7 +35,7 @@ async function createTimerRoute(req: Request, res: Response) {
 
 async function updateTimerRoute(req: Request, res: Response) {
     try {
-        const timerId = parseInt(req.params.id);
+        const timerId = parseInt(req.params.timerId);
         const updatedTimer = { id: timerId, ...req.body }
         const response = await updateTimer(timerId, updatedTimer)
         res.status(200).send(response)
@@ -47,7 +47,7 @@ async function updateTimerRoute(req: Request, res: Response) {
 
 async function deleteTimerRoute(req: Request, res: Response) {
     try {
-        const timerId = parseInt(req.params.id);
+        const timerId = parseInt(req.params.timerId);
         const response = await deleteTimer(timerId)
         res.status(200).send(response)
     } catch (err) {
