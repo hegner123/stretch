@@ -18,9 +18,11 @@
     const displayActive = writable<string>("");
     const isLoading = writable<boolean>(true);
     const fetchError = writable<unknown>("");
+    const isEditing = writable<boolean>(false)
 
     setContext("setId", $active);
     setContext("timerOrder", { timerOrder: ["1", "2"] });
+    setContext("isEditing", $isEditing)
 
     async function fetchSets(id: number | null) {
         if (userId === null) return;

@@ -3,10 +3,10 @@ import { deleteUser } from "../../db/auth";
 
 const deleteRoutes: Router = Router()
 
-deleteRoutes.delete("/:id", handleDelete)
+deleteRoutes.delete("/:userId", handleDelete)
 
 async function handleDelete(req: any, res: any) {
-    const userId = req.params.id;
+    const userId = req.params.userId;
     try {
         const queryRes = await deleteUser(userId)
         res.status(200).send({queryRes})

@@ -1,10 +1,14 @@
 /api
     /auth
         /login
+        post / json{email:string,password:string}
         /register
+        post / json{email:string,password:string}
         /refresh
         /signout
+        put / json{userId:number}
         /delete
+        del /:userId 
     /timer
     get /:timerId 
     post/:setId
