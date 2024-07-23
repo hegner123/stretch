@@ -18,11 +18,11 @@
     const displayActive = writable<string>("");
     const isLoading = writable<boolean>(true);
     const fetchError = writable<unknown>("");
-    const isEditing = writable<boolean>(false)
+    const isEditing = writable<boolean>(false);
 
     setContext("setId", $active);
     setContext("timerOrder", { timerOrder: ["1", "2"] });
-    setContext("isEditing", $isEditing)
+    setContext("isEditing", isEditing);
 
     async function fetchSets(id: number | null) {
         if (userId === null) return;
@@ -86,7 +86,9 @@
         }
     });
     data.subscribe((value) => {
-        console.log(value);
+        if (value !== "") {
+            console.log(value);
+        }
     });
 
     timers.subscribe(async (value) => {
@@ -127,7 +129,7 @@
             {#if !$isLoading && $timers !== ""}
                 {#if $active !== null}
                     <div class="setup-header">
-                        <TitleEdit title={$displayActive}/>
+                        <TitleEdit title={$displayActive} tag={"h3"} />
                     </div>
                 {/if}
                 {#if $ready && $timers.length > 0}
@@ -165,9 +167,7 @@
                                 setId={item.id}
                                 name={item.name}
                                 on:handleMakeActive={handleMakeActive}
-                            >
-                                Timer Id {item.id}
-                            </TimerSet>
+                            />
                         {/each}
                     {:else if $data?.length === 1}
                         <TimerSet
@@ -175,9 +175,7 @@
                             name={$data[0].name}
                             on:deleteSuccess={handleInsert}
                             on:handleMakeActive={handleMakeActive}
-                        >
-                            Timer Id {$data[0].id}
-                        </TimerSet>
+                        />
                     {:else}
                         <p>No Sets</p>
                     {/if}

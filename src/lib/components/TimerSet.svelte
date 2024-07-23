@@ -1,11 +1,12 @@
 <script lang="ts">
     import { createEventDispatcher, getContext } from "svelte";
     import { writable, type Stores, type Writable } from "svelte/store";
+    import TitleEdit from "./TitleEdit.svelte";
     import CloseIcon from "$lib/icons/closeIcon.svelte";
     const dispatch = createEventDispatcher();
     export let setId: number;
     export let name = "";
-    const isEditing:Writable<Stores> = getContext("isEditing")
+    const isEditing: Writable<Stores> = getContext("isEditing");
 
     async function handleDispatchMakeActive() {
         console.log("click");
@@ -24,9 +25,13 @@
 </script>
 
 <article class={`card ${$isEditing ? "edit" : ""}`} data-set-id={setId}>
-    <button class="link" on:click={handleDispatchMakeActive}>
-        <slot></slot>
-    </button>
+    <a
+        href="/#"
+        class="link"
+        on:click|preventDefault={handleDispatchMakeActive}
+    >
+   <TitleEdit title={name} tag={"p"}/>
+    </a>
     {#if $isEditing}
         <button class="btn-delete" on:click={handleDelete}>
             <CloseIcon
@@ -49,11 +54,11 @@
         display: grid;
         position: relative;
     }
-    .card.editing button.link {
+    .card.editing a.link {
         margin-top: 1rem;
     }
 
-    button.link {
+    a.link {
         color: #fff;
         background: transparent;
         border: none;
@@ -62,7 +67,7 @@
         cursor: pointer;
     }
 
-    button.link:hover {
+    a.link:hover {
         text-decoration: underline;
     }
 

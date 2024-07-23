@@ -3,13 +3,14 @@
     import { writable } from "svelte/store";
     import AddTimer from "./AddTimer.svelte";
     export let title: string;
+    export let tag: string;
     let inputTitle: HTMLInputElement = document.createElement("input");
     let anchorElement: HTMLAnchorElement = document.createElement("a");
     const editing = writable<boolean>(false);
     const value = writable<string>("Untitled Set");
 
-    async function updateName(){
-        const response = await fetch("http://localhost:4000/api/timers")
+    async function updateName() {
+        const response = await fetch("http://localhost:4000/api/timers");
     }
 
     function handleTitleClick() {
@@ -24,7 +25,6 @@
 
     function handleBlur() {
         editing.set(false);
-        
     }
 
     onMount(() => {
@@ -44,21 +44,40 @@
     />
 {:else}
     <a
+        class="title-handler"
         bind:this={anchorElement}
         href="/#"
         on:click|preventDefault={handleTitleClick}
     >
-        <h3>{$value}</h3>
+        {#if tag === "h1"}
+            <h1 class={`${tag}-title`}>{$value}</h1>
+        {:else if tag === "h2"}
+            <h2 class={`${tag}-title`}>{$value}</h2>
+        {:else if tag === "h3"}
+            <h3 class={`${tag}-title`}>{$value}</h3>
+        {:else if tag === "h4"}
+            <h4 class={`${tag}-title`}>{$value}</h4>
+        {:else if tag === "h5"}
+            <h5 class={`${tag}-title`}>{$value}</h5>
+        {:else if tag === "h6"}
+            <h6 class={`${tag}-title`}>{$value}</h6>
+        {:else if tag === "p"}
+            <p class={`${tag}-title`}>{$value}</p>
+        {:else}
+            <p class={`${tag}-title`}>{$value}</p>
+        {/if}
     </a>
-    <AddTimer/>
+    <AddTimer />
 {/if}
 
 <style>
     a {
-        color: white;
         text-decoration: none;
+        color: #fff;
     }
-    a h3 {
+
+    a.title-handler .h3-title,
+    .edit-title {
         font-size: 2rem;
         display: block;
         width: fit-content;
@@ -73,15 +92,14 @@
         color: #fff;
         font-size: 2rem;
         font-weight: 600;
-        border-radius:15px;
+        border-radius: 15px;
     }
 
     .edit-title:focus,
     .edit-title:focus-within,
     .edit-title:focus-visible {
-        outline:none;
-        background:#fff;
-        color:#000;
+        outline: none;
+        background: #fff;
+        color: #000;
     }
-
 </style>
