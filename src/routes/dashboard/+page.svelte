@@ -19,6 +19,7 @@
     const isLoading = writable<boolean>(true);
     const fetchError = writable<unknown>("");
     const isEditing = writable<boolean>(false);
+    const editingSets = writable<boolean>(false)
 
     setContext("setId", $active);
     setContext("timerOrder", { timerOrder: ["1", "2"] });
@@ -28,7 +29,13 @@
         if (userId === null) return;
         try {
             const url = `http://localhost:4000/api/timersets/${id}`;
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    // Ensure no invalid headers like ':method' are included
+                },
+            });
             return await response.json();
         } catch (err) {
             console.error(err);
@@ -39,11 +46,32 @@
             }, 2000);
         }
     }
+    async function fetchClientAPI() {
+        try {
+            const url = `/api/test`;
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    // Ensure no invalid headers like ':method' are included
+                },
+            });
+            return await response.text();
+        } catch (err) {
+            console.error(err);
+        }
+    }
     async function fetchTimers(setId: number | null) {
         if (setId === null) return;
         try {
             const url = `http://localhost:4000/api/timersets/timers/${setId}`;
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    // Ensure no invalid headers like ':method' are included
+                },
+            });
             return await response.json();
         } catch (err) {
             console.error(err);
@@ -57,6 +85,10 @@
             const url = `http://localhost:4000/api/timersets/timers/${timerId}`;
             const options = {
                 method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    // Ensure no invalid headers like ':method' are included
+                },
             };
             const response = await fetch(url, options);
             return await response.json();
@@ -109,6 +141,7 @@
         userId.set(user.id);
         data.set(fetchedSets?.body);
         timers.set(fetchedTimers ? fetchedTimers?.body : []);
+        fetchClientAPI();
     });
     function handleMakeActive(e: any) {
         console.log(e);
@@ -120,6 +153,10 @@
         displayActive.set(name);
         return { id: id, name: name };
     }
+
+    function handleEditSets(){
+        editingSets.set($editingSets)
+    }
 </script>
 
 <Nav />
@@ -129,7 +166,9 @@
             {#if !$isLoading && $timers !== ""}
                 {#if $active !== null}
                     <div class="setup-header">
-                        <TitleEdit title={$displayActive} tag={"h3"} />
+                        <TitleEdit title={$displayActive} tag={"h3"} parentEditing={null}>
+                            <AddTimer />
+                        </TitleEdit>
                     </div>
                 {/if}
                 {#if $ready && $timers.length > 0}
@@ -158,6 +197,7 @@
                 <div class="set-header">
                     <h3>Sets</h3>
                     <AddTimerSet on:dbinsert={handleInsert} />
+                    <button on:click={handleEditSets}>Edit</button>
                 </div>
                 <div class="timer-set-list">
                     {#if $data && $data?.length > 1}
@@ -167,6 +207,7 @@
                                 setId={item.id}
                                 name={item.name}
                                 on:handleMakeActive={handleMakeActive}
+                                editingSets={$editingSets}
                             />
                         {/each}
                     {:else if $data?.length === 1}
@@ -175,6 +216,7 @@
                             name={$data[0].name}
                             on:deleteSuccess={handleInsert}
                             on:handleMakeActive={handleMakeActive}
+                            editingSets={$editingSets}
                         />
                     {:else}
                         <p>No Sets</p>

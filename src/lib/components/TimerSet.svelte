@@ -6,10 +6,10 @@
     const dispatch = createEventDispatcher();
     export let setId: number;
     export let name = "";
+    export let editingSets: boolean;
     const isEditing: Writable<Stores> = getContext("isEditing");
 
     async function handleDispatchMakeActive() {
-        console.log("click");
         dispatch("handleMakeActive", { id: setId, name: name });
     }
 
@@ -22,6 +22,7 @@
     function handleDelete() {
         deleteSet(setId);
     }
+
 </script>
 
 <article class={`card ${$isEditing ? "edit" : ""}`} data-set-id={setId}>
@@ -30,7 +31,11 @@
         class="link"
         on:click|preventDefault={handleDispatchMakeActive}
     >
-   <TitleEdit title={name} tag={"p"}/>
+        <TitleEdit
+            title={name}
+            tag={"p"}
+            parentEditing={editingSets}
+        />
     </a>
     {#if $isEditing}
         <button class="btn-delete" on:click={handleDelete}>
@@ -47,9 +52,8 @@
 <style>
     .card {
         background: #333;
-        padding: 1rem 0.5rem;
         max-width: 90vw;
-        width: max-content;
+        width: 100%;
         border-radius: 15px;
         display: grid;
         position: relative;
@@ -63,8 +67,11 @@
         background: transparent;
         border: none;
         box-shadow: none;
+        width: 100%;
+        height: 100%;
         text-decoration: none;
         cursor: pointer;
+        padding: 0 1rem;
     }
 
     a.link:hover {

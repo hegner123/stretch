@@ -4,6 +4,7 @@
     import AddTimer from "./AddTimer.svelte";
     export let title: string;
     export let tag: string;
+    export let parentEditing: boolean|null;
     let inputTitle: HTMLInputElement = document.createElement("input");
     let anchorElement: HTMLAnchorElement = document.createElement("a");
     const editing = writable<boolean>(false);
@@ -27,6 +28,10 @@
         editing.set(false);
     }
 
+    function preventClick() {
+        return;
+    }
+
     onMount(() => {
         if (title) {
             value.set(title);
@@ -38,7 +43,7 @@
     <input
         bind:this={inputTitle}
         type="text"
-        class="edit-title"
+        class={`edit-title ${parentEditing ? "editing" : ""}`}
         value={$value}
         on:blur={handleBlur}
     />
@@ -47,7 +52,8 @@
         class="title-handler"
         bind:this={anchorElement}
         href="/#"
-        on:click|preventDefault={handleTitleClick}
+        on:click|preventDefault={preventClick}
+        on:dblclick|preventDefault={handleTitleClick}
     >
         {#if tag === "h1"}
             <h1 class={`${tag}-title`}>{$value}</h1>
@@ -67,7 +73,7 @@
             <p class={`${tag}-title`}>{$value}</p>
         {/if}
     </a>
-    <AddTimer />
+    <slot></slot>
 {/if}
 
 <style>
@@ -85,6 +91,7 @@
         font-weight: 600;
     }
     .edit-title {
+        display: block;
         background: transparent;
         border-left: none;
         border-top: none;
@@ -93,6 +100,7 @@
         font-size: 2rem;
         font-weight: 600;
         border-radius: 15px;
+        padding: 0 1rem;
     }
 
     .edit-title:focus,
